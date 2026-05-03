@@ -225,53 +225,6 @@ const { advanceTaskStatus, deleteTask, setTaskStatus, updateTask, tasks } = useT
             </Text>
           </View>
 
-          {task.status !== 'completed' && (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => {
-                onClose();
-                setTimeout(() => {
-                  if (isTimerActiveForTask) {
-                    navigation.navigate('FocusScreen', {
-                      taskId: task.id,
-                      duration: Math.floor(timeLeft / 60),
-                      taskTitle: task.title,
-                    });
-                  } else {
-                    navigation.navigate('FocusSetupScreen', { taskId: task.id });
-                  }
-                }, 300);
-              }}
-              style={[
-                styles.focusPill,
-                {
-                  backgroundColor: isTimerActiveForTask
-                    ? theme.text
-                    : theme.text + '10',
-                },
-              ]}
-            >
-              <Play
-                fill={isTimerActiveForTask ? theme.background : theme.text + '70'}
-                color={isTimerActiveForTask ? theme.background : theme.text + '70'}
-                size={10}
-              />
-              <Text
-                style={[
-                  styles.focusText,
-                  {
-                    color: isTimerActiveForTask ? theme.background : theme.text + '80',
-                  },
-                ]}
-              >
-                {isTimerActiveForTask
-                  ? `${Math.floor(timeLeft / 60)}:${(timeLeft % 60)
-                    .toString()
-                    .padStart(2, '0')}`
-                  : 'Focus'}
-              </Text>
-            </TouchableOpacity>
-          )}
         </View>
 
         {(youtubeId || !!descriptionText) && (

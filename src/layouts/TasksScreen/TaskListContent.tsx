@@ -1,10 +1,9 @@
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, StyleSheet } from "react-native";
 import theme from "../../data/color-theme";
 import TaskCard, { PRIORITY_CONFIG } from "../../components/TaskCard";
 import { CheckCircle, Rocket, PartyPopper, Inbox } from "lucide-react-native";
 
-// ─── Date grouping helpers ────────────────────────────────────────────────
 const isSameDay = (a: Date, b: Date) => a.toDateString() === b.toDateString();
 
 const getGroupLabel = (dueDate: Date | string): string => {
@@ -26,7 +25,6 @@ const getGroupLabel = (dueDate: Date | string): string => {
 
 type TaskGroup = { label: string; tasks: any[] };
 
-// Map a group label back to a sortable timestamp for ordering groups
 const getLabelSortKey = (label: string): number => {
     if (label === "Today") return 0; // always first
     const now = new Date();
@@ -51,24 +49,19 @@ const groupTasksByDate = (tasks: any[]): TaskGroup[] => {
         groupMap.get(label)!.push(task);
     }
 
-
-    // Build groups and sort: Today always first, then ascending by date
     return Array.from(groupMap.entries())
         .map(([label, groupTasks]) => ({ label, tasks: groupTasks }))
         .sort((a, b) => {
             const aKey = getLabelSortKey(a.label);
             const bKey = getLabelSortKey(b.label);
-            // Today (key=0) is always first; others sorted ascending
             if (aKey === 0) return -1;
             if (bKey === 0) return 1;
             return aKey - bKey;
         });
 };
 
-// ─── Card color pool ──────────────────────────────────────────────────────
 const CARD_COLORS = [theme.primary[1], theme.primary[3], theme.primary[4]];
 
-// ─── Props ────────────────────────────────────────────────────────────────
 type Props = {
     currentTab: string;
     tasks: any[];
@@ -79,7 +72,6 @@ type Props = {
     onComplete?: (taskId: number) => void;
 };
 
-// ─── Component ────────────────────────────────────────────────────────────
 export default function TaskListContent({
     currentTab,
     tasks,
@@ -88,11 +80,9 @@ export default function TaskListContent({
     onSetStatus,
     onDelete,
 }: Props) {
-    // Show all tasks matching the current tab's status
     const filteredTasks = tasks.filter((t) => t.status === currentTab);
     const groups = groupTasksByDate(filteredTasks);
 
-    // Per-tab empty state
     const EMPTY: Record<string, { icon: React.ReactNode; title: string; hint: string }> = {
         "to-do": { icon: <CheckCircle size={48} color={theme.text + "80"} strokeWidth={1.5} />, title: "You're all caught up!", hint: "No to-do tasks. Tap \"Add Task\" to create one." },
         "in-progress": { icon: <Rocket size={48} color={theme.text + "80"} strokeWidth={1.5} />, title: "Nothing in progress yet", hint: "Swipe right on a to-do card to move it here." },
@@ -105,69 +95,37 @@ export default function TaskListContent({
             showsVerticalScrollIndicator={false}
             bounces={false}
             overScrollMode="never"
-            style={{ flex: 1 }}
-            contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollViewContent}
         >
-            <View style={{
-                paddingHorizontal: theme.padding.paddingMainX,
-                marginTop: 20,
-                gap: 28,
-            }}>
+            <View style={styles.container}>
                 {filteredTasks.length === 0 ? (
-                    <View style={{ alignItems: "center", marginTop: 60, gap: 8, paddingHorizontal: 24 }}>
-                        <View style={{ marginBottom: 8 }}>{empty.icon}</View>
-                        <Text style={{ fontFamily: theme.fonts[600], fontSize: 17, color: theme.text + "CC", textAlign: "center", marginTop: 4 }}>
+                    <View style={styles.emptyContainer}>
+                        <View style={styles.emptyIconWrapper}>{empty.icon}</View>
+                        <Text style={styles.emptyTitle}>
                             {empty.title}
                         </Text>
-                        <Text style={{ fontFamily: theme.fonts[400], fontSize: 14, color: theme.text + "55", textAlign: "center", lineHeight: 22 }}>
+                        <Text style={styles.emptyHint}>
                             {empty.hint}
                         </Text>
                     </View>
                 ) : (
                     groups.map(({ label, tasks: groupTasks }) => (
-                        <View key={label} style={{ gap: 14 }}>
-
-                            {/* ── Date section header ───────────────── */}
-                            <View style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 10,
-                                marginBottom: 10,
-                            }}>
-                                <Text style={{
-                                    fontFamily: theme.fonts[600],
-                                    fontSize: 11,
-                                    color: theme.text + "AA",
-                                    textTransform: "uppercase",
-                                    letterSpacing: 1,
-                                }}>
+                        <View key={label} style={styles.groupContainer}>
+                            <View style={styles.sectionHeader}>
+                                <Text style={styles.sectionHeaderLabel}>
                                     {label}
                                 </Text>
-                                <View style={{
-                                    flex: 1,
-                                    height: 1,
-                                    backgroundColor: theme.text + "18",
-                                }} />
-                                <View style={{
-                                    backgroundColor: theme.text + "14",
-                                    paddingHorizontal: 8,
-                                    paddingVertical: 2,
-                                    borderRadius: 10,
-                                }}>
-                                    <Text style={{
-                                        fontFamily: theme.fonts[600],
-                                        fontSize: 11,
-                                        color: theme.text + "70",
-                                    }}>
+                                <View style={styles.sectionHeaderDivider} />
+                                <View style={styles.sectionHeaderBadge}>
+                                    <Text style={styles.sectionHeaderBadgeText}>
                                         {groupTasks.length}
                                     </Text>
                                 </View>
                             </View>
 
-{/* ── Task cards under this date ────────── */}
-                            <View style={{ gap: 14 }}>
+                            <View style={styles.taskCardsContainer}>
                                 {groupTasks.map((task) => {
-                                    // Get background color based on priority
                                     const priorityCfg = PRIORITY_CONFIG[task.priority] ?? null;
                                     const taskBgColor = priorityCfg?.bg ?? theme.primary[1];
                                     return (
@@ -190,3 +148,76 @@ export default function TaskListContent({
         </ScrollView>
     );
 }
+
+const styles = StyleSheet.create({
+    scrollView: {
+        flex: 1,
+    },
+    scrollViewContent: {
+        flexGrow: 1,
+        paddingBottom: 120,
+    },
+    container: {
+        paddingHorizontal: theme.padding.paddingMainX,
+        marginTop: 20,
+        gap: 28,
+    },
+    emptyContainer: {
+        alignItems: "center",
+        marginTop: 60,
+        gap: 8,
+        paddingHorizontal: 24,
+    },
+    emptyIconWrapper: {
+        marginBottom: 8,
+    },
+    emptyTitle: {
+        fontFamily: theme.fonts[600],
+        fontSize: 17,
+        color: theme.text + "CC",
+        textAlign: "center",
+        marginTop: 4,
+    },
+    emptyHint: {
+        fontFamily: theme.fonts[400],
+        fontSize: 14,
+        color: theme.text + "55",
+        textAlign: "center",
+        lineHeight: 22,
+    },
+    groupContainer: {
+        gap: 14,
+    },
+    sectionHeader: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        marginBottom: 10,
+    },
+    sectionHeaderLabel: {
+        fontFamily: theme.fonts[600],
+        fontSize: 11,
+        color: theme.text + "AA",
+        textTransform: "uppercase",
+        letterSpacing: 1,
+    },
+    sectionHeaderDivider: {
+        flex: 1,
+        height: 1,
+        backgroundColor: theme.text + "18",
+    },
+    sectionHeaderBadge: {
+        backgroundColor: theme.text + "14",
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        borderRadius: 10,
+    },
+    sectionHeaderBadgeText: {
+        fontFamily: theme.fonts[600],
+        fontSize: 11,
+        color: theme.text + "70",
+    },
+    taskCardsContainer: {
+        gap: 14,
+    },
+});

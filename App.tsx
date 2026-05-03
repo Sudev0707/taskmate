@@ -4,11 +4,8 @@ import { JSX, useEffect } from "react";
 import { StatusBar } from "react-native";
 import TabNavigator from "./src/navigation/TabNavigator";
 import TaskDetailsScreen from "./src/screens/TaskDetailsScreen";
-import FocusSetupScreen from "./src/screens/FocusSetupScreen";
-import FocusScreen from "./src/screens/FocusScreen";
 import AnalyticsScreen from "./src/screens/AnalyticsScreen";
 import HelpSupportScreen from "./src/screens/HelpSupportScreen";
-import CalendarScreen from "./src/screens/CalendarScreen";
 import { TimerProvider } from "./src/context/TimerContext";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import GlobalCelebration from "./src/components/GlobalCelebration";
@@ -53,11 +50,8 @@ function AppContent(): JSX.Element {
         <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.background } }}>
           <Stack.Screen name="MainTabs" component={TabNavigator} />
           <Stack.Screen name="TaskDetailsScreen" component={TaskDetailsScreen} />
-          <Stack.Screen name="FocusSetupScreen" component={FocusSetupScreen} />
-          <Stack.Screen name="FocusScreen" component={FocusScreen} />
           <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
           <Stack.Screen name="HelpSupportScreen" component={HelpSupportScreen} />
-          <Stack.Screen name="CalendarScreen" component={CalendarScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </TimerProvider>

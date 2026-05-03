@@ -31,13 +31,6 @@ type DumpEntry = {
 const STORAGE_KEY = '@TaskMate_braindump';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.35;
-const ABSOLUTE_FILL = {
-  position: 'absolute' as const,
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-};
 
 const formatTime = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -57,16 +50,19 @@ const formatDate = (iso: string) => {
 export default function BrainDumpScreen() {
   const [entries, setEntries] = useState<DumpEntry[]>([]);
   const [input, setInput] = useState('');
-  const [activeTab, setActiveTab] = useState<'thoughts' | 'links' | 'notes'>('thoughts');
+  const [activeTab, setActiveTab] = useState<'thoughts' | 'links' | 'notes'>(
+    'thoughts',
+  );
 
   const isLinkEntry = (text: string) => /(https?:\/\/[^\s]+)/g.test(text);
-
   const isLongEntry = (text: string) => text.length >= 100;
 
-  const displayedEntries = entries.filter(entry => 
-    activeTab === 'thoughts' ? !isLinkEntry(entry.text) && !isLongEntry(entry.text) :
-    activeTab === 'notes' ? !isLinkEntry(entry.text) && isLongEntry(entry.text) :
-    isLinkEntry(entry.text)
+  const displayedEntries = entries.filter(entry =>
+    activeTab === 'thoughts'
+      ? !isLinkEntry(entry.text) && !isLongEntry(entry.text)
+      : activeTab === 'notes'
+      ? !isLinkEntry(entry.text) && isLongEntry(entry.text)
+      : isLinkEntry(entry.text),
   );
 
   useFocusEffect(
@@ -127,9 +123,6 @@ export default function BrainDumpScreen() {
       >
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Brain Dump</Text>
-          <Text style={styles.headerSubtitle}>
-             Write it down, free your mind
-          </Text>
         </View>
 
         <View style={styles.inputCard}>
@@ -171,12 +164,14 @@ export default function BrainDumpScreen() {
         </View>
 
         <View style={styles.tabsShell}>
-          {(['thoughts', 'notes', 'links'] as const).map((tab) => {
+          {(['thoughts', 'notes', 'links'] as const).map(tab => {
             const isActive = activeTab === tab;
             const count = entries.filter(e =>
-              tab === 'thoughts' ? !isLinkEntry(e.text) && !isLongEntry(e.text) :
-              tab === 'notes' ? !isLinkEntry(e.text) && isLongEntry(e.text) :
-              isLinkEntry(e.text)
+              tab === 'thoughts'
+                ? !isLinkEntry(e.text) && !isLongEntry(e.text)
+                : tab === 'notes'
+                ? !isLinkEntry(e.text) && isLongEntry(e.text)
+                : isLinkEntry(e.text),
             ).length;
 
             return (
@@ -256,8 +251,155 @@ export default function BrainDumpScreen() {
   );
 }
 
+function BrainDumpCard({
+  entry,
+  onDelete,
+}: {
+  entry: DumpEntry;
+  onDelete: () => void;
+}) {
+  const youtubeId = extractYouTubeId(entry.text);
+  const pan = useRef(new Animated.Value(0)).current;
+  const [dismissed, setDismissed] = useState(false);
+
+  const latestCb = useRef({ onDelete });
+  latestCb.current = { onDelete };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_, gs) => {
+        return gs.dx < -10 && Math.abs(gs.dx) > Math.abs(gs.dy) && !dismissed;
+      },
+      onPanResponderMove: (_, gs) => pan.setValue(Math.min(0, gs.dx)),
+      onPanResponderRelease: (_, gs) => {
+        if (gs.dx < -SWIPE_THRESHOLD) {
+          Animated.timing(pan, {
+            toValue: -SCREEN_WIDTH,
+            duration: 250,
+            useNativeDriver: true,
+          }).start(() => {
+            setDismissed(true);
+            latestCb.current.onDelete();
+          });
+        } else {
+          Animated.spring(pan, {
+            toValue: 0,
+            useNativeDriver: true,
+            bounciness: 12,
+            speed: 20,
+          }).start();
+        }
+      },
+    }),
+  ).current;
+
+  if (dismissed) return null;
+
+  const cleanedText = hideYouTubeUrl(entry.text);
+
+  return (
+    <View style={styles.cardContainer}>
+      {/* RIGHT bg (swipe left) */}
+      <Animated.View
+        style={[
+          styles.cardSwipeBg,
+          {
+            opacity: pan.interpolate({
+              inputRange: [-SWIPE_THRESHOLD, 0],
+              outputRange: [1, 0],
+              extrapolate: 'clamp',
+            }),
+            transform: [
+              {
+                scale: pan.interpolate({
+                  inputRange: [-SWIPE_THRESHOLD, 0],
+                  outputRange: [1, 0.95],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <Text style={styles.deleteText}>Delete</Text>
+        <View
+          style={[styles.deleteIcon, { backgroundColor: theme.error + '25' }]}
+        >
+          <Trash2 color={theme.error} size={16} />
+        </View>
+      </Animated.View>
+
+      {/* Foreground card */}
+      <Animated.View
+        {...panResponder.panHandlers}
+        style={[
+          styles.cardForeground,
+          {
+            transform: [
+              { translateX: pan },
+              {
+                rotateZ: pan.interpolate({
+                  inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+                  outputRange: ['-12deg', '0deg', '12deg'],
+                  extrapolate: 'clamp',
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        {/* Accent icon badge */}
+        {!youtubeId && (
+          <View style={styles.accentBadge}>
+            <Sparkles size={15} color={theme.primary[13]} strokeWidth={2} />
+          </View>
+        )}
+
+        {/* Text + timestamp */}
+        <View style={styles.textContainer}>
+          {youtubeId && <YouTubePreview youtubeId={youtubeId} />}
+          {cleanedText && (
+            <Text style={styles.linkText}>
+              {cleanedText.split(/(https?:\/\/[^\s]+)/g).map((part, index) => {
+                if (part.match(/(https?:\/\/[^\s]+)/g)) {
+                  return (
+                    <Text
+                      key={index}
+                      style={styles.link}
+                      onPress={e => {
+                        e.stopPropagation();
+                        Linking.openURL(part).catch(err =>
+                          console.log("Couldn't load page", err),
+                        );
+                      }}
+                    >
+                      {part}
+                    </Text>
+                  );
+                }
+                return part;
+              })}
+            </Text>
+          )}
+          <View style={styles.timestampContainer}>
+            <View
+              style={[
+                styles.timestampDot,
+                { backgroundColor: theme.primary[13] + '60' },
+              ]}
+            />
+            <Text style={styles.timestampText}>
+              {formatDate(entry.createdAt)} · {formatTime(entry.createdAt)}
+            </Text>
+          </View>
+        </View>
+      </Animated.View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  // SafeArea
   safeArea: {
     flex: 1,
     backgroundColor: theme.background,
@@ -265,7 +407,6 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
-  // Header
   header: {
     paddingHorizontal: theme.padding.paddingMainX,
     paddingTop: 12,
@@ -278,13 +419,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: theme.text,
   },
-  headerSubtitle: {
-    fontFamily: theme.fonts[400],
-    fontSize: 13,
-    color: theme.text + '50',
-    marginTop: 2,
-  },
-  // Input Card
   inputCard: {
     marginHorizontal: theme.padding.paddingMainX,
     marginTop: 16,
@@ -325,38 +459,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 2,
   },
-  // Tabs
-  tabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: theme.padding.paddingMainX,
-    marginTop: 24,
-    marginBottom: 10,
-    gap: 12,
-  },
-  // tab: {
-  //     flexDirection: "row",
-  //     alignItems: "center",
-  //     gap: 6,
-  //     paddingVertical: 8,
-  //     paddingHorizontal: 16,
-  //     borderRadius: 16,
-  // },
-  // tabText: {
-  //     fontFamily: theme.fonts[600],
-  //     fontSize: 14,
-  //     textTransform: "capitalize",
-  // },
-  // countBadge: {
-  //     paddingHorizontal: 6,
-  //     paddingVertical: 2,
-  //     borderRadius: 10,
-  // },
-  // countBadgeText: {
-  //     fontFamily: theme.fonts[600],
-  //     fontSize: 11,
-  // },
-  //  new tab
-
   tabsShell: {
     flexDirection: 'row',
     marginHorizontal: theme.padding.paddingMainX,
@@ -418,13 +520,11 @@ const styles = StyleSheet.create({
   countBadgeTextIdle: {
     color: theme.text + '55',
   },
-  // ScrollView Content
   scrollContent: {
     paddingHorizontal: theme.padding.paddingMainX,
     paddingBottom: 90,
     gap: 10,
   },
-  // Empty State
   emptyState: {
     alignItems: 'center',
     paddingTop: 72,
@@ -453,9 +553,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     maxWidth: 220,
   },
-  // Card
   cardContainer: {
-    // marginBottom: 5,
+    position: 'relative',
   },
   cardSwipeBg: {
     position: 'absolute',
@@ -531,155 +630,6 @@ const styles = StyleSheet.create({
   },
   link: {
     textDecorationLine: 'underline',
+    color: theme.primary[13],
   },
 });
-
-// ─── Brain Dump Card ─────────────────────────────────────────────────────────
-
-function BrainDumpCard({
-  entry,
-  onDelete,
-}: {
-  entry: DumpEntry;
-  onDelete: () => void;
-}) {
-  const youtubeId = extractYouTubeId(entry.text);
-  const pan = useRef(new Animated.Value(0)).current;
-  const [dismissed, setDismissed] = useState(false);
-
-  const latestCb = useRef({ onDelete });
-  latestCb.current = { onDelete };
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, gs) => {
-        return gs.dx < -10 && Math.abs(gs.dx) > Math.abs(gs.dy) && !dismissed;
-      },
-      onPanResponderMove: (_, gs) => pan.setValue(Math.min(0, gs.dx)),
-      onPanResponderRelease: (_, gs) => {
-        if (gs.dx < -SWIPE_THRESHOLD) {
-          Animated.timing(pan, {
-            toValue: -SCREEN_WIDTH,
-            duration: 250,
-            useNativeDriver: true,
-          }).start(() => {
-            setDismissed(true);
-            latestCb.current.onDelete();
-          });
-        } else {
-          Animated.spring(pan, {
-            toValue: 0,
-            useNativeDriver: true,
-            bounciness: 12,
-            speed: 20,
-          }).start();
-        }
-      },
-    }),
-  ).current;
-
-  if (dismissed) return null;
-
-  return (
-    <View style={styles.cardContainer}>
-      {/* ── RIGHT bg (swipe left) ── */}
-      <Animated.View
-        style={[
-          styles.cardSwipeBg,
-          {
-            opacity: pan.interpolate({
-              inputRange: [-SWIPE_THRESHOLD, 0],
-              outputRange: [1, 0],
-              extrapolate: 'clamp',
-            }),
-            transform: [
-              {
-                scale: pan.interpolate({
-                  inputRange: [-SWIPE_THRESHOLD, 0],
-                  outputRange: [1, 0.95],
-                  extrapolate: 'clamp',
-                }),
-              },
-            ],
-          },
-        ]}
-      >
-        <Text style={styles.deleteText}>Delete</Text>
-        <View
-          style={[styles.deleteIcon, { backgroundColor: theme.error + '25' }]}
-        >
-          <Trash2 color={theme.error} size={16} />
-        </View>
-      </Animated.View>
-
-      {/* ── Foreground card ── */}
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[
-          styles.cardForeground,
-          {
-            transform: [
-              { translateX: pan },
-              {
-                rotateZ: pan.interpolate({
-                  inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
-                  outputRange: ['-12deg', '0deg', '12deg'],
-                  extrapolate: 'clamp',
-                }),
-              },
-            ],
-          },
-        ]}
-      >
-        {/* Accent icon badge */}
-        {!youtubeId && (
-          <View style={styles.accentBadge}>
-            <Sparkles size={15} color={theme.primary[ 13]} strokeWidth={2} />
-          </View>
-        )}
-
-        {/* Text + timestamp */}
-        <View style={styles.textContainer}>
-          {youtubeId && <YouTubePreview youtubeId={youtubeId} />}
-          {!!hideYouTubeUrl(entry.text) && (
-            <Text style={styles.linkText}>
-              {hideYouTubeUrl(entry.text)
-                .split(/(https?:\/\/[^\s]+)/g)
-                .map((part, index) => {
-                  if (part.match(/(https?:\/\/[^\s]+)/g)) {
-                    return (
-                      <Text
-                        key={index}
-                        style={styles.link}
-                        onPress={e => {
-                          e.stopPropagation();
-                          Linking.openURL(part).catch(err =>
-                            console.log("Couldn't load page", err),
-                          );
-                        }}
-                      >
-                        {part}
-                      </Text>
-                    );
-                  }
-                  return part;
-                })}
-            </Text>
-          )}
-          <View style={styles.timestampContainer}>
-            <View
-              style={[
-                styles.timestampDot,
-                { backgroundColor: theme.primary[13] + '60' },
-              ]}
-            />
-            <Text style={styles.timestampText}>
-              {formatDate(entry.createdAt)} · {formatTime(entry.createdAt)}
-            </Text>
-          </View>
-        </View>
-      </Animated.View>
-    </View>
-  );
-}

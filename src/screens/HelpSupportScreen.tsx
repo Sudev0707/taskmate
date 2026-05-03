@@ -10,58 +10,24 @@ import {
 } from "lucide-react-native";
 import theme from "../data/color-theme";
 
-// ─── Data ────────────────────────────────────────────────────────────────────
 
 const LINKS = [
-    {
-        id: "email",
-        label: "Email Support",
-        value: "sudev97",
-        sublabel: "Drop us a message anytime",
-        icon: Mail,
-        color: theme.primary[1],
-        onPress: () => Linking.openURL("mailto:s"),
-    },
     {
         id: "github",
         label: "GitHub Repository",
         value: " TaskMate-app",
-        sublabel: "View source code & raise issues",
+        sublabel: "View source code",
         icon: Github,
         color: theme.primary[2],
-        onPress: () => Linking.openURL("https://github.com"),
-    },
-    {
-        id: "website",
-        label: "Official Website",
-        value: "TaskMate.com",
-        sublabel: "News, updates & documentation",
-        icon: Globe,
-        color: theme.primary[3],
-        onPress: () => Linking.openURL("https://"),
-    },
-    {
-        id: "producthunt",
-        label: "Product Hunt",
-        value: "TaskMate — Master Your Day",
-        sublabel: "Leave a review & support us 🙌",
-        icon: ExternalLink,
-        color: theme.primary[4],
-        onPress: () =>
-            Linking.openURL(
-                "https://www.producthunt.com/products/TaskMate-master-your-day?utm_source=other&utm_medium=social",
-            ),
+        onPress: () => Linking.openURL("https://github.com/Sudev0707/taskmate"),
     },
 ];
-
-// ─── Screen ──────────────────────────────────────────────────────────────────
 
 export default function HelpSupportScreen() {
     const navigation = useNavigation<any>();
 
     return (
         <SafeAreaView style={styles.safeArea} edges={["top", "left", "right"]}>
-            {/* ── Header ─────────────────────────────────────── */}
             <View style={styles.header}>
                 <Pressable
                     onPress={() => navigation.goBack()}
@@ -84,19 +50,7 @@ export default function HelpSupportScreen() {
                 overScrollMode="never"
                 contentContainerStyle={styles.scrollContent}
             >
-                {/* ── Intro card ─────────────────────────────── */}
-                <View style={styles.introCard}>
-                    <Text style={styles.introTitle}>We're here to help 👋</Text>
-                    <Text style={styles.introDescription}>
-                        Have a bug report, feature request, or just want to say hi? Reach out through
-                        any of the channels below.
-                    </Text>
-                </View>
-
-                {/* ── Contact & links section label ────────── */}
-                <Text style={styles.sectionLabel}>Contact & Links</Text>
-
-                {/* ── Link rows card ─────────────────────────── */}
+                <Text style={styles.sectionLabel}>Github</Text>
                 <View style={styles.linkCard}>
                     {LINKS.map((item, idx) => (
                         <View key={item.id}>
@@ -104,26 +58,19 @@ export default function HelpSupportScreen() {
                                 onPress={item.onPress}
                                 style={({ pressed }) => (pressed ? styles.linkRowPressed : styles.linkRow)}
                             >
-                                {/* Icon */}
                                 <View style={styles.iconContainer}>
                                     <item.icon size={18} color={item.color} strokeWidth={2} />
                                 </View>
-
-                                {/* Text */}
                                 <View style={styles.linkTextContainer}>
                                     <Text style={styles.linkText}>{item.label}</Text>
                                     <Text style={styles.sublinkText} numberOfLines={1}>
                                         {item.sublabel}
                                     </Text>
                                 </View>
-
-                                {/* Value + chevron */}
                                 <View style={styles.valueContainer}>
                                     <ExternalLink size={15} color={item.color} strokeWidth={2} />
                                 </View>
                             </Pressable>
-
-                            {/* Divider (skip after last) */}
                             {idx < LINKS.length - 1 && <View style={styles.divider} />}
                         </View>
                     ))}

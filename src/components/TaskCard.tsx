@@ -7,6 +7,7 @@ import {
   PanResponder,
   Dimensions,
   Linking,
+  StyleSheet,
 } from 'react-native';
 import theme from '../data/color-theme';
 import {
@@ -31,7 +32,6 @@ import { useNavigation } from '@react-navigation/native';
 import { extractYouTubeId, hideYouTubeUrl } from '../utils/youtube';
 import YouTubePreview from './YouTubePreview';
 
-// ─── Subtask type ───────────────────────────────────────────────────────────────
 export type Subtask = {
   id: number;
   title: string;
@@ -39,7 +39,6 @@ export type Subtask = {
   createdAt: Date;
 };
 
-// ─── Task type ───────────────────────────────────────────────────────────────
 export type Task = {
   id: number;
   title: string;
@@ -55,7 +54,6 @@ export type Task = {
   [key: string]: any;
 };
 
-// ─── Status constants ────────────────────────────────────────────────────────
 const STATUS_ORDER = ['to-do', 'in-progress', 'completed'] as const;
 type TaskStatus = (typeof STATUS_ORDER)[number];
 
@@ -78,7 +76,6 @@ const getTomorrow = (): Date => {
   return d;
 };
 
-// ─── Priority config (updated) ────────────────────────────────────────────────
 export const PRIORITY_CONFIG: Record<
   string,
   { icon: React.ReactNode; label: string; color: string; bg: string; dot: string }
@@ -98,15 +95,14 @@ export const PRIORITY_CONFIG: Record<
     dot: '#FFB224',
   },
   low: {
-    icon: <ArrowDown size={12} color="#616161" />,
+    icon: <ArrowDown size={12} color="#2e7bdf" />,
     label: 'Low',
-    color: '#616161',
+    color: '#2e7bdf',
     bg: theme.primary[5],
-    dot: '#616161',
+    dot: '#2e7bdf',
   },
 };
 
-// ─── Swipe-right helpers ─────────────────────────────────────────────────────
 const getSwipeRightLabel = (status: string) => {
   if (status === 'to-do') return 'Move to In Progress';
   if (status === 'in-progress') return 'Mark as Done';
@@ -120,18 +116,9 @@ const SwipeRightIcon = ({ status }: { status: string }) => {
   return <ChevronsRight color={theme.white} size={20} />;
 };
 
-// ─── Screen constants ────────────────────────────────────────────────────────
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.35;
-const ABSOLUTE_FILL = {
-  position: 'absolute' as const,
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-};
 
-// ─── Props ───────────────────────────────────────────────────────────────────
 type TaskCardProps = {
   task: Task;
   bgColor: string;
@@ -142,7 +129,6 @@ type TaskCardProps = {
   onComplete?: () => void;
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
 export default function TaskCard({
   task,
   bgColor,
@@ -156,14 +142,12 @@ export default function TaskCard({
   const [dismissed, setDismissed] = useState(false);
   const [showStatusMenu, setShowStatusMenu] = useState(false);
 
-  // Store latest callbacks to avoid stale closures in PanResponder
   const latestCallbacks = useRef({ onAdvanceStatus, onComplete, onDelete });
   latestCallbacks.current = { onAdvanceStatus, onComplete, onDelete };
 
   const { timeLeft, isActive, activeTaskId } = useTimer();
   const navigation = useNavigation<any>();
 
-  // ── Status navigation ─────────────────────────────────────────────────
   const currentIdx = STATUS_ORDER.indexOf(task.status as TaskStatus);
   const prevStatus: TaskStatus | null =
     currentIdx > 0 ? STATUS_ORDER[currentIdx - 1] : null;
@@ -189,7 +173,6 @@ export default function TaskCard({
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // ── PanResponder ──────────────────────────────────────────────────────
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
@@ -248,17 +231,13 @@ export default function TaskCard({
   };
 
   return (
-    <View style={{ position: 'relative', width: '100%', marginBottom: 12 }}>
-      {/* ── LEFT bg (swipe right) ─────────────────────────────────── */}
+    <View style={styles.cardWrapper}>
+      {/* Right swipe background */}
       <Animated.View
         style={[
-          ABSOLUTE_FILL,
+          styles.swipeRightBg,
           {
             backgroundColor: STATUS_COLORS[task.status] + '20',
-            borderRadius: theme.border.radius.main,
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingLeft: 24,
             opacity: pan.interpolate({
               inputRange: [0, SWIPE_THRESHOLD],
               outputRange: [0, 1],
@@ -277,40 +256,21 @@ export default function TaskCard({
         ]}
       >
         <View
-          style={{
-            backgroundColor: STATUS_COLORS[task.status] + '30',
-            height: 40,
-            width: 40,
-            borderRadius: 20,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={[
+            styles.swipeIconContainer,
+            { backgroundColor: STATUS_COLORS[task.status] + '30' },
+          ]}
         >
           <SwipeRightIcon status={task.status} />
         </View>
-        <Text
-          style={{
-            fontFamily: theme.fonts[600],
-            fontSize: 14,
-            color: theme.white,
-            marginLeft: 12,
-          }}
-        >
-          {swipeRightLabel}
-        </Text>
+        <Text style={styles.swipeRightLabel}>{swipeRightLabel}</Text>
       </Animated.View>
 
-      {/* ── RIGHT bg (swipe left) ─────────────────────────────────── */}
+      {/* Left swipe background (Delete) */}
       <Animated.View
         style={[
-          ABSOLUTE_FILL,
+          styles.swipeLeftBg,
           {
-            backgroundColor: '#FF575715',
-            borderRadius: theme.border.radius.main,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            paddingRight: 24,
             opacity: pan.interpolate({
               inputRange: [-SWIPE_THRESHOLD, 0],
               outputRange: [1, 0],
@@ -328,31 +288,13 @@ export default function TaskCard({
           },
         ]}
       >
-        <Text
-          style={{
-            fontFamily: theme.fonts[600],
-            fontSize: 14,
-            color: '#FF5757',
-            marginRight: 12,
-          }}
-        >
-          Delete
-        </Text>
-        <View
-          style={{
-            backgroundColor: '#FF575725',
-            height: 40,
-            width: 40,
-            borderRadius: 20,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+        <Text style={styles.swipeLeftLabel}>Delete</Text>
+        <View style={styles.swipeDeleteIconContainer}>
           <Trash2 color="#FF5757" size={20} />
         </View>
       </Animated.View>
 
-      {/* ── Foreground card ───────────────────────────────────────── */}
+      {/* Foreground card */}
       <Animated.View
         {...panResponder.panHandlers}
         style={{
@@ -377,60 +319,18 @@ export default function TaskCard({
             task.status !== 'to-do' ? () => setShowStatusMenu(true) : undefined
           }
           delayLongPress={500}
-          style={{
-            backgroundColor: bgColor,
-            borderRadius: 20,
-            padding: 16,
-            gap: 12,
-            overflow: 'hidden',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 3,
-          }}
+          style={[styles.cardTouchable, { backgroundColor: bgColor + '60', borderColor: bgColor }]}
         >
-          {/* Status Badge */}
-          <View
-            style={{
-              position: 'absolute',
-              top: 16,
-              right: 16,
-            //   backgroundColor: STATUS_COLORS[task.status] + '20',
-            //   paddingHorizontal: 8,
-            //   paddingVertical: 4,
-            //   borderRadius: 12,
-            }}
-          >
-            {/* <Text style={{ 
-                            fontFamily: theme.fonts[600], 
-                            fontSize: 10, 
-                            color: STATUS_COLORS[task.status],
-                            textTransform: 'uppercase',
-                            letterSpacing: 0.5,
-                        }}>
-                            {STATUS_LABELS[task.status]}
-                        </Text> */}
-            {/* Priority pill */}
+          {/* Priority Badge */}
+          <View style={styles.priorityBadgeWrapper}>
             {priorityCfg && (
-              <View
-                style={{
-                  backgroundColor: theme.white,
-                  paddingHorizontal: 7,
-                  paddingVertical: 5,
-                  borderRadius: 50,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 4,
-                }}
-              >
+              <View style={styles.priorityBadge}>
                 {priorityCfg.icon}
                 <Text
-                  style={{
-                    fontFamily: theme.fonts[600],
-                    fontSize: 11,
-                    color: priorityCfg.color,
-                  }}
+                  style={[
+                    styles.priorityBadgeText,
+                    { color: priorityCfg.color },
+                  ]}
                 >
                   {priorityCfg.label}
                 </Text>
@@ -438,33 +338,16 @@ export default function TaskCard({
             )}
           </View>
 
-          {/* ── Title ─────────────────────────── */}
-          <View style={{ paddingRight: 80 }}>
-            <Text
-              style={{
-                fontFamily: theme.fonts[600],
-                fontSize: 18,
-                color: theme.background,
-                lineHeight: 24,
-                marginBottom: 4,
-              }}
-            >
+          {/* Title and Description */}
+          <View style={styles.titleContainer}>
+            <Text style={styles.titleText}>
               {youtubeId
                 ? task.title
                 : task.title.split('-')[1]?.trim() || task.title}
             </Text>
 
-            {/* ── Description ───────────────────── */}
             {!!hideYouTubeUrl(task.description) && (
-              <Text
-                style={{
-                  fontFamily: theme.fonts[400],
-                  fontSize: 14,
-                  color: theme.background + '80',
-                  lineHeight: 20,
-                }}
-                numberOfLines={2}
-              >
+              <Text style={styles.descriptionText} numberOfLines={2}>
                 {hideYouTubeUrl(task.description)
                   .split(/(https?:\/\/[^\s]+)/g)
                   .map((part, index) => {
@@ -472,10 +355,7 @@ export default function TaskCard({
                       return (
                         <Text
                           key={index}
-                          style={{
-                            textDecorationLine: 'underline',
-                            color: theme.background + 'CC',
-                          }}
+                          style={styles.linkText}
                           onPress={e => {
                             e.stopPropagation();
                             Linking.openURL(part).catch(err =>
@@ -493,273 +373,72 @@ export default function TaskCard({
             )}
           </View>
 
-          {/* ── YouTube Thumbnail ─────────────── */}
-          {youtubeId && (
-            <View style={{ marginVertical: 4 }}>
-              <YouTubePreview
-                youtubeId={youtubeId}
-                textColor={theme.background}
-                bgColor={theme.background + '10'}
-              />
-            </View>
-          )}
-
-          {/* ── Bottom section: metadata ── */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: 8,
-              marginTop: 4,
-            }}
-          >
-            {/* Left side: Tags & Due Date */}
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: 8,
-                flexWrap: 'wrap',
-                alignItems: 'center',
-                flex: 1,
-              }}
-            >
-              {/* Due Date */}
-              {/* {task.dueDate && (
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: theme.background + "10", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 12 }}>
-                                    <Calendar size={12} color={theme.background + "70"} />
-                                    <Text style={{ fontFamily: theme.fonts[500], fontSize: 11, color: theme.background + "70" }}>
-                                        {formatDueDate(task.dueDate)}
-                                    </Text>
-                                </View>
-                            )} */}
-
-              {/* Tags */}
+          {/* Bottom section: metadata */}
+          <View style={styles.metadataContainer}>
+            {/* Tags */}
+            <View style={styles.tagsContainer}>
               {task.tag?.slice(0, 2).map((tagName: string, i: number) => (
-                <View
-                  key={i}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 3,
-                    backgroundColor: theme.background + '10',
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
-                    borderRadius: 12,
-                  }}
-                >
-                  <Tag size={10} color={theme.background + '60'} />
-                  <Text
-                    key={i}
-                    style={{
-                      fontFamily: theme.fonts[500],
-                      fontSize: 11,
-                      color: theme.background + '70',
-                      textTransform: 'capitalize',
-                    }}
-                  >
+                <View key={i} style={styles.tag}>
+                  <Tag size={10} color={theme.text} />
+                  <Text style={styles.tagText}>
                     {tagName}
                   </Text>
                 </View>
               ))}
 
               {(task.tag?.length ?? 0) > 2 && (
-                <View
-                  style={{
-                    backgroundColor: theme.background + '10',
-                    paddingHorizontal: 10,
-                    paddingVertical: 5,
-                    borderRadius: 12,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: theme.fonts[600],
-                      fontSize: 11,
-                      color: theme.background + '70',
-                    }}
-                  >
+                <View style={styles.extraTagCount}>
+                  <Text style={styles.extraTagCountText}>
                     +{(task.tag?.length ?? 0) - 2}
                   </Text>
                 </View>
-              )}
-            </View>
-
-            {/* Right side: Priority & Timer */}
-            <View
-              style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}
-            >
-              {/* Timer Button */}
-              {task.status !== 'completed' && (
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => {
-                    if (isActive && activeTaskId === task.id) {
-                      navigation.navigate('FocusScreen', {
-                        taskId: task.id,
-                        duration: Math.floor(timeLeft / 60),
-                      });
-                    } else {
-                      navigation.navigate('FocusSetupScreen', {
-                        taskId: task.id,
-                      });
-                    }
-                  }}
-                  style={{
-                    backgroundColor:
-                      isActive && activeTaskId === task.id
-                        ? theme.background
-                        : theme.background + '15',
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    borderRadius: 20,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 6,
-                    borderWidth: isActive && activeTaskId === task.id ? 0 : 1,
-                    borderColor: theme.background + '20',
-                  }}
-                >
-                  <Play
-                    fill={
-                      isActive && activeTaskId === task.id
-                        ? theme.white
-                        : theme.background
-                    }
-                    color={
-                      isActive && activeTaskId === task.id
-                        ? theme.white
-                        : theme.background
-                    }
-                    size={10}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: theme.fonts[700],
-                      fontSize: 12,
-                      color:
-                        isActive && activeTaskId === task.id
-                          ? theme.white
-                          : theme.background + '90',
-                    }}
-                  >
-                    {isActive && activeTaskId === task.id
-                      ? `${Math.floor(timeLeft / 60)}:${(timeLeft % 60)
-                          .toString()
-                          .padStart(2, '0')}`
-                      : 'Focus'}
-                  </Text>
-                </TouchableOpacity>
               )}
             </View>
           </View>
 
           {/* Indicator for long-press */}
           {task.status !== 'to-do' && !showStatusMenu && (
-            <View
-              style={{
-                position: 'absolute',
-                bottom: 8,
-                left: 0,
-                right: 0,
-                alignItems: 'center',
-                opacity: 0.3,
-              }}
-            >
+            <View style={styles.longPressIndicator}>
               <MoreVertical size={12} color={theme.background} />
             </View>
           )}
         </TouchableOpacity>
       </Animated.View>
 
-      {/* ── Long-press status menu ────────── */}
+      {/* Long-press status menu */}
       {showStatusMenu && task.status !== 'to-do' && (
-        <View
-          style={{
-            marginTop: -8,
-            paddingTop: 8,
-            backgroundColor: bgColor,
-            borderBottomLeftRadius: 20,
-            borderBottomRightRadius: 20,
-            overflow: 'hidden',
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 12,
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              borderTopWidth: 1,
-              borderTopColor: theme.background + '15',
-            }}
-          >
-            {/* ← Prev */}
+        <View style={[styles.statusMenu, { backgroundColor: bgColor }]}>
+          <View style={styles.statusMenuContent}>
+            {/* Previous Status Button */}
             {prevStatus ? (
               <TouchableOpacity
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  backgroundColor: theme.background + '10',
-                  paddingVertical: 10,
-                  borderRadius: 30,
-                }}
+                style={styles.prevStatusButton}
                 onPress={handlePrevStatus}
                 activeOpacity={0.85}
               >
                 <ArrowLeft size={14} color={theme.background} />
-                <Text
-                  style={{
-                    fontFamily: theme.fonts[600],
-                    fontSize: 13,
-                    color: theme.background,
-                  }}
-                >
+                <Text style={styles.statusButtonText}>
                   {STATUS_LABELS[prevStatus]}
                 </Text>
               </TouchableOpacity>
             ) : (
-              <View style={{ flex: 1 }} />
+              <View style={styles.emptySpace} />
             )}
 
-            {/* Next → */}
+            {/* Next Status Button */}
             <TouchableOpacity
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                backgroundColor: STATUS_COLORS[nextStatus],
-                paddingVertical: 10,
-                borderRadius: 30,
-              }}
+              style={[
+                styles.nextStatusButton,
+                { backgroundColor: STATUS_COLORS[nextStatus] },
+              ]}
               onPress={handleNextStatus}
               activeOpacity={0.85}
             >
-              <Text
-                style={{
-                  fontFamily: theme.fonts[600],
-                  fontSize: 13,
-                  color: theme.white,
-                }}
-              >
+              <Text style={styles.nextStatusButtonText}>
                 {STATUS_LABELS[nextStatus]}
               </Text>
               {nextIsTomorrow && (
-                <Text
-                  style={{
-                    fontFamily: theme.fonts[400],
-                    fontSize: 10,
-                    color: theme.white + 'CC',
-                  }}
-                >
-                  Tomorrow
-                </Text>
+                <Text style={styles.tomorrowBadge}>Tomorrow</Text>
               )}
               <ArrowRight size={14} color={theme.white} />
             </TouchableOpacity>
@@ -769,3 +448,220 @@ export default function TaskCard({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  cardWrapper: {
+    position: 'relative',
+    width: '100%',
+    marginBottom: 12,
+  },
+  // Swipe Right Background
+  swipeRightBg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: theme.border.radius.main,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 24,
+  },
+  swipeIconContainer: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  swipeRightLabel: {
+    fontFamily: theme.fonts[600],
+    fontSize: 14,
+    color: theme.white,
+    marginLeft: 12,
+  },
+  // Swipe Left Background
+  swipeLeftBg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FF575715',
+    borderRadius: theme.border.radius.main,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingRight: 24,
+  },
+  swipeLeftLabel: {
+    fontFamily: theme.fonts[600],
+    fontSize: 14,
+    color: '#FF5757',
+    marginRight: 12,
+  },
+  swipeDeleteIconContainer: {
+    backgroundColor: '#FF575725',
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Card Touchable
+  cardTouchable: {
+    borderRadius: 20,
+    padding: 16,
+    gap: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    borderWidth: 1,
+  },
+  // Priority Badge
+  priorityBadgeWrapper: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+  },
+  priorityBadge: {
+    backgroundColor: theme.white,
+    paddingHorizontal: 7,
+    paddingVertical: 5,
+    borderRadius: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  priorityBadgeText: {
+    fontFamily: theme.fonts[600],
+    fontSize: 11,
+  },
+  // Title Section
+  titleContainer: {
+    paddingRight: 80,
+  },
+  titleText: {
+    fontFamily: theme.fonts[600],
+    fontSize: 18,
+    color: theme.text,
+    lineHeight: 24,
+    marginBottom: 4,
+  },
+  descriptionText: {
+    fontFamily: theme.fonts[400],
+    fontSize: 14,
+    color: theme.text,
+    lineHeight: 20,
+  },
+  linkText: {
+    textDecorationLine: 'underline',
+    color: theme.background + 'CC',
+  },
+  // Metadata Section
+  metadataContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    flex: 1,
+  },
+  tag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: theme.text + '10',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+  },
+  tagText: {
+    fontFamily: theme.fonts[500],
+    fontSize: 11,
+    color: theme.text,
+    textTransform: 'capitalize',
+  },
+  extraTagCount: {
+    backgroundColor: theme.background + '10',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+  },
+  extraTagCountText: {
+    fontFamily: theme.fonts[600],
+    fontSize: 11,
+    color: theme.background + '70',
+  },
+  // Long Press Indicator
+  longPressIndicator: {
+    position: 'absolute',
+    bottom: 8,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    opacity: 0.3,
+  },
+  // Status Menu
+  statusMenu: {
+    marginTop: -8,
+    paddingTop: 8,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    overflow: 'hidden',
+  },
+  statusMenuContent: {
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: theme.background + '15',
+  },
+  prevStatusButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: theme.background + '10',
+    paddingVertical: 10,
+    borderRadius: 30,
+  },
+  statusButtonText: {
+    fontFamily: theme.fonts[600],
+    fontSize: 13,
+    color: theme.background,
+  },
+  emptySpace: {
+    flex: 1,
+  },
+  nextStatusButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 10,
+    borderRadius: 30,
+  },
+  nextStatusButtonText: {
+    fontFamily: theme.fonts[600],
+    fontSize: 13,
+    color: theme.white,
+  },
+  tomorrowBadge: {
+    fontFamily: theme.fonts[400],
+    fontSize: 10,
+    color: theme.white + 'CC',
+  },
+});

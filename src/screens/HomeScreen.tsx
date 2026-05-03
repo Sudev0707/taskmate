@@ -5,12 +5,7 @@ import HeaderHeroScreen from '../layouts/homeScreen/Header';
 import TodayRecentTasks from '../layouts/homeScreen/TodayRecentTasks';
 import { useStreak } from '../hooks/useStreak';
 import { useTaskManager } from '../hooks/useTaskManager';
-import StartTimerList from '../layouts/homeScreen/StartTimerList';
-import WeeklyFocusWidget from '../layouts/homeScreen/WeeklyFocusWidget';
 import ProductivityStatsWidget from '../layouts/homeScreen/ProductivityStatsWidget';
-import QuickActionsWidget from '../layouts/homeScreen/QuickActionsWidget';
-import FocusStreakWidget from '../layouts/homeScreen/FocusStreakWidget';
-import FocusTimerWidget from '../layouts/homeScreen/FocusTimerWidget';
 
 export default function HomeScreen() {
   const { tasks } = useTaskManager();
@@ -27,9 +22,6 @@ export default function HomeScreen() {
         <HeaderHeroScreen streak={currentStreak} />
         <TodayRecentTasks />
         <ProductivityStatsWidget />
-        <FocusStreakWidget />
-        <WeeklyFocusWidget />
-        {/* <QuickActionsWidget /> */}
       </ScrollView>
     </SafeAreaView>
   );

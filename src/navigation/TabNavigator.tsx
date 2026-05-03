@@ -35,11 +35,11 @@ export default function TabNavigator() {
         tabBarInactiveTintColor: theme.text + '80',
         tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: '#0e0d0d' ,
+          backgroundColor: '#f0f0f0' ,
           borderColor: theme.text + '20',
-          height: 60 + insets.bottom,
+          height: 50 + insets.bottom,
           // paddingBottom: insets.bottom ,
-          paddingTop: 10,
+          paddingTop: 7,
           marginHorizontal: 16,
           borderRadius: 30,
           position: 'absolute',
@@ -66,7 +66,7 @@ export default function TabNavigator() {
         options={{
           tabBarIcon: ({ focused }) => (
             <LayoutDashboard
-              color={focused ? theme.text : theme.text + '60'}
+              color={focused ? theme.background : theme.background + '60'}
               size={22}
             />
           ),
@@ -78,7 +78,7 @@ export default function TabNavigator() {
         options={{
           tabBarLabel: 'Brain Dump',
           tabBarIcon: ({ focused }) => (
-            <Brain color={focused ? theme.text : theme.text + '60'} size={22} />
+            <Brain color={focused ? theme.background : theme.background + '60'} size={22} />
           ),
         }}
       />
@@ -88,7 +88,7 @@ export default function TabNavigator() {
         options={{
           tabBarIcon: ({ focused }) => (
             <ListTodo
-              color={focused ? theme.text : theme.text + '60'}
+              color={focused ? theme.background : theme.background + '60'}
               size={22}
             />
           ),
@@ -101,7 +101,7 @@ export default function TabNavigator() {
         options={{
           tabBarIcon: ({ focused }) => (
             <Settings
-              color={focused ? theme.text : theme.text + '60'}
+              color={focused ? theme.background : theme.background + '60'}
               size={22}
             />
           ),

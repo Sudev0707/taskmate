@@ -8,6 +8,7 @@ import {
     CalendarDays,
     Cpu,
     ChevronRight,
+    Mail,
     Moon,
     Sun,
     Settings
@@ -97,10 +98,8 @@ function SettingScreen() {
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]} edges={["top", "left", "right"]}>
             <View style={styles.pageHeading}>
-
                 <View>
                     <Text style={[styles.headingTitle, { color: theme.text }]}>Settings</Text>
-                    <Text style={[styles.headingSubtitle, { color: theme.text + "60" }]}>App information & resources</Text>
                 </View>
             </View>
 
@@ -111,7 +110,7 @@ function SettingScreen() {
                 contentContainerStyle={styles.scrollContent}
             >
 
-                {/* <SectionHeader title="Appearance" icon={Sun} color={theme.primary[3]} />
+                <SectionHeader title="Appearance" icon={Sun} color={theme.primary[3]} />
                 <View style={[styles.sectionContainer, { backgroundColor: theme.text + "04", borderColor: theme.text + "0A" }]}>
                     <Pressable
                         onPress={handleToggle}
@@ -147,7 +146,7 @@ function SettingScreen() {
                             />
                         </Animated.View>
                     </Pressable>
-                </View> */}
+                </View>
 
 
                 <SectionHeader title="Analytics" icon={BarChart2} color={theme.primary[4]} />
@@ -164,38 +163,21 @@ function SettingScreen() {
                     />
                     <View style={[styles.rowDivider, { backgroundColor: theme.text + "08" }]} />
                     <SettingRow
-                        label="Calendar"
-                        sublabel="View tasks by date & schedule"
-                        icon={CalendarDays}
-                        iconColor={theme.primary[2]}
-                        onPress={() => navigation.navigate("CalendarScreen")}
+                        label="Help & Support"
+                        sublabel="Contact support, FAQs & feedback"
+                        icon={Mail}
+                        iconColor={theme.primary[1]}
+                        onPress={() => navigation.navigate("HelpSupportScreen")}
                         rightElement={
-                            <ChevronRight size={18} color={theme.primary[2]} strokeWidth={2.5} />
+                            <ChevronRight size={18} color={theme.primary[1]} strokeWidth={2.5} />
                         }
                     />
                 </View>
-
-
-                <SectionHeader title="About" icon={Info} color={theme.primary[2]} />
-                <View style={[styles.sectionContainer, { backgroundColor: theme.text + "04", borderColor: theme.text + "0A" }]}>
-                    <SettingRow
-                        label="App Version"
-                        sublabel="TaskMate v1.0.0"
-                        icon={Cpu}
-                        iconColor={theme.primary[2]}
-                        rightElement={
-                            <View style={[styles.versionBadge, { backgroundColor: theme.primary[2] + "1A", borderColor: theme.primary[2] + "30" }]}>
-                                <Text style={[styles.versionBadgeText, { color: theme.primary[2] }]}>Latest</Text>
-                            </View>
-                        }
-                    />
-                </View>
-
 
                 <View style={styles.copyrightContainer}>
                     <View style={[styles.logo, { backgroundColor: theme.text + "15" }]} />
                     <Text style={[styles.copyrightText, { color: theme.text + "90" }]}>Copyright © {new Date().getFullYear()} TaskMate</Text>
-                    <Text style={[styles.footerText, { color: theme.text + "60" }]}>Built with ❤️ for Privacy{"\n"}Your data never leaves your device.</Text>
+                    <Text style={[styles.footerText, { color: theme.text + "60" }]}>Built with ❤️ for Privacy - Sudev Majhi</Text>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -274,23 +256,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: theme.text + '10',
     },
-    pageHeadingIcon: {
-        width: 56,
-        height: 56,
-        borderRadius: 20,
-        backgroundColor: theme.primary[4] + "15",
-        alignItems: "center",
-        justifyContent: "center",
-    },
     headingTitle: {
-          fontSize: 20,
-              color: theme.text,
-              fontFamily: theme.fonts[700],
-    },
-    headingSubtitle: {
-        fontFamily: theme.fonts[400],
-        fontSize: 14,
-        marginTop: 4,
+        fontSize: 20,
+        color: theme.text,
+        fontFamily: theme.fonts[700],
     },
     // ScrollView
     scrollContent: {
@@ -318,7 +287,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 3,
         borderRadius: 2,
-        marginBottom: 16,
+        marginBottom: 40,
     },
     copyrightText: {
         fontFamily: theme.fonts[600],
@@ -331,19 +300,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
         lineHeight: 20,
         marginTop: 8,
-    },
-    // Version Badge
-    versionBadge: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        borderWidth: 1,
-    },
-    versionBadgeText: {
-        fontFamily: theme.fonts[700],
-        fontSize: 11,
-        letterSpacing: 0.5,
-        textTransform: "uppercase",
     },
     // Toggle styles
     toggleContainer: {
