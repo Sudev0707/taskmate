@@ -8,8 +8,6 @@ A **privacy-first** task management app with built-in focus timer, streak tracki
 
 ---
 
-## ✨ Features![alt text](<Master your workflow..png>)
-
 ### 📋 Task Management
 - Create, organize, and track tasks with ease
 - Custom categories: To Do, In Progress, Completed
@@ -174,12 +172,6 @@ TaskMate/
 ### Typography
 - **Font**: Google Sans Flex
 - Weights: Thin, ExtraLight, Light, Regular, Medium, SemiBold, Bold, ExtraBold, Black
-
----
-
-## 📄 License
-
-MIT License - See LICENSE file for details.
 
 ---
 
