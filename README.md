@@ -154,33 +154,10 @@ TaskMate/
 └── ios/                  # iOS native code
 ```
 
----
-
-## 🎨 Design System
-
-### Colors (Dark Theme)
-| Color | Hex | Usage |
-|-------|-----|-------|
-| Background | `#1F1F1F` | Main background |
-| Text | `#F6F5F8` | Primary text |
-| Primary 1 | `#FFECA0` | Yellow accent |
-| Primary 2 | `#CFE9BC` | Green accent |
-| Primary 3 | `#BBE7EF` | Blue accent |
-| Primary 4 | `#FF8C6F` | Orange/Coral accent |
-| Error | `#FFA6A6` | Error states |
 
 ### Typography
 - **Font**: Google Sans Flex
 - Weights: Thin, ExtraLight, Light, Regular, Medium, SemiBold, Bold, ExtraBold, Black
-
----
-
-## 🙏 Acknowledgments
-
-- [React Native](https://reactnative.dev/)
-- [React Navigation](https://reactnavigation.org/)
-- [Lucide Icons](https://lucide.dev/)
-- [Notifee](https://notifee.app/)
 
 ---
 
