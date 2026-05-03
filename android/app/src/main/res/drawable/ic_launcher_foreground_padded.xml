@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Foreground wrapper for the adaptive icon.
+
+  Android adaptive icon canvas = 108dp x 108dp.
+  Safe/visible zone            =  72dp x 72dp (center).
+  Outer 18dp on each side is clipped by the launcher mask.
+
+  To zoom the icon OUT (make it appear smaller with breathing room),
+  we add insets so the actual artwork sits comfortably inside the safe zone.
+
+  inset = 22dp on all sides  →  artwork occupies 64dp of the 108dp canvas
+  This keeps the icon well within the safe zone with nice padding.
+  Increase inset to zoom out more, decrease to zoom in more.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@mipmap/ic_launcher_foreground"
+        android:top="22dp"
+        android:bottom="22dp"
+        android:left="22dp"
+        android:right="22dp"/>
+</layer-list>

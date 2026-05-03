@@ -1,0 +1,185 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-ExtraLight.ttf",
+      "sha1": "9cbeaf251dd5d981db40455a7a618db2059062a9"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-Thin.ttf",
+      "sha1": "e24f8bfa912eb7d476f48843b85f1c009c58b1ff"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-Medium.ttf",
+      "sha1": "348f219920cd1c8f79e1d2da465b8c270bb0e243"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-ExtraBold.ttf",
+      "sha1": "523483a661141ef6e667fa034f6c3166118b96de"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-Thin.ttf",
+      "sha1": "55e5c8470be55c0dbd55bb9c1a161c067475833a"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-Bold.ttf",
+      "sha1": "a9d5d37c5b64e2ce669ef9c76f5b6bf7cc617e40"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-Black.ttf",
+      "sha1": "60a6c69bc535edb36392285c416c1d328e62463d"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-Light.ttf",
+      "sha1": "aef4b15bae18ccc9cc9f7a6bfd6c634f7e66377c"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-Light.ttf",
+      "sha1": "d9a83bb556fbd799b6036a1798bbef728004c708"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-Regular.ttf",
+      "sha1": "769f40c92ad0d4b2167796d501399c44023e5010"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-Bold.ttf",
+      "sha1": "98a3e0fa305dd49a13405575f217efbcb6132559"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-Bold.ttf",
+      "sha1": "f52d56cafcafd424c67dda4780388d38cfba685b"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-ExtraBold.ttf",
+      "sha1": "11c9726720a8e9b42220f0e3d9f292580ea5e06b"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-ExtraBold.ttf",
+      "sha1": "03fb8ada489e0eecd78473f480bcf16959af65be"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-Medium.ttf",
+      "sha1": "85cdbf6a3f79f923db0b49c977d2e3671113bb18"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-Light.ttf",
+      "sha1": "897891a9c1825028d5557557aca51d7388f1f2fd"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-Black.ttf",
+      "sha1": "dda3222bd347f327159d9d583c12f93d1454d588"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-Regular.ttf",
+      "sha1": "a909e8a2bcdb4be889bd58850fa806e7b815a864"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-SemiBold.ttf",
+      "sha1": "2410f1d482c13c066f10ad5666f478f39dfaff97"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-Thin.ttf",
+      "sha1": "945ff58f3b88563933846fa9f0552c0f7592b9e8"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-SemiBold.ttf",
+      "sha1": "eef8c89479a245ade7f9e9f3924d9731ca7ca9b1"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-Medium.ttf",
+      "sha1": "8204d3dce1b8c6d57df9cf612a2843f8c22e4bfd"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-ExtraLight.ttf",
+      "sha1": "1d4b6657ff28b0f93b1277a0975b1eb95b069062"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-Black.ttf",
+      "sha1": "bae8bb01a4ed6a2bbbb429a824a0208ae907cabe"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-Regular.ttf",
+      "sha1": "27133202d0051273a93a0b9f9229d5fa71e8081a"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-Light.ttf",
+      "sha1": "65d6412361ee0f0123983bff8efb61bf0193b542"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-Medium.ttf",
+      "sha1": "c75844e56781345d1dad0dec9a1c3673afa983b3"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-ExtraLight.ttf",
+      "sha1": "efa9147a66937933f88337a0ab7441efda117be9"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-Medium.ttf",
+      "sha1": "e80c0ffd004fd5f817835ee0833b3bbceecf38ba"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-ExtraBold.ttf",
+      "sha1": "499a9c38eff014d9e25793dbc834a5cd075c73e6"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-SemiBold.ttf",
+      "sha1": "85b6485eccaca72d03709ff62e1977bcf553a92d"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-Regular.ttf",
+      "sha1": "d7d604df58269c67dede33d504a85b71c333ef95"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-Regular.ttf",
+      "sha1": "2a0cc6369a6611c6cc5230fb284c3f62f1fa0a79"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-ExtraBold.ttf",
+      "sha1": "52f2c8a8b04be79e63d4689c1880dc569b5b89a3"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-SemiBold.ttf",
+      "sha1": "4adf1d71c16b2c65edc804b2b444979c8bd0a79a"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-ExtraLight.ttf",
+      "sha1": "4f1240c7ed35ff777b8c9d9ef4e952bbd294e7c3"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_36pt-ExtraLight.ttf",
+      "sha1": "da96a508507976cefaa95ba4b92fc80e2b521487"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-Black.ttf",
+      "sha1": "549669834edd995cfa12be09c0d1d784bfe28c7a"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-Bold.ttf",
+      "sha1": "acbc332394abf6fa616f32dc2457b9fa5e6187e0"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_72pt-Light.ttf",
+      "sha1": "5b7045d88935657f9124699d8e5b40bbe5718b88"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-Bold.ttf",
+      "sha1": "a5af1797a97f6035773637630fd5dda45ce9caa7"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-Black.ttf",
+      "sha1": "473a6d6b47da8dab2bb6b43d690c096f1af918f7"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_24pt-Thin.ttf",
+      "sha1": "b061b5f8540259fd2fb5f6888f2057f552dfde78"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_120pt-SemiBold.ttf",
+      "sha1": "4726409a912c5cf156b23f27b798878059e248e2"
+    },
+    {
+      "path": "assets/fonts/GoogleSansFlex_9pt-Thin.ttf",
+      "sha1": "c9b40951ac5566452eb0428ae3bd533d8663466e"
+    }
+  ]
+}
