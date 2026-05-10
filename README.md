@@ -155,10 +155,6 @@ TaskMate/
 ```
 
 
-### Typography
-- **Font**: Google Sans Flex
-- Weights: Thin, ExtraLight, Light, Regular, Medium, SemiBold, Bold, ExtraBold, Black
-
 ---
 
 <div align="center">
